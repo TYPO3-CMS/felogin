@@ -8,14 +8,13 @@ services:
     resource: '../Classes/*'
 
   feloginPasswordRecovery.rateLimiterFactory:
-    class: Symfony\Component\RateLimiter\RateLimiterFactory
+    class: TYPO3\CMS\Core\RateLimiter\RateLimiterFactory
     arguments:
       $config:
         id: 'felogin-password-recovery'
         policy: 'sliding_window'
         limit: 5
         interval: '15 minutes'
-      $storage: '@TYPO3\CMS\Core\RateLimiter\Storage\CachingFrameworkStorage'
 
   TYPO3\CMS\FrontendLogin\Controller\PasswordRecoveryController:
     arguments:
