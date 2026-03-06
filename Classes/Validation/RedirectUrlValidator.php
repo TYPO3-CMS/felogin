@@ -51,7 +51,7 @@ class RedirectUrlValidator implements LoggerAwareInterface
 
         // Validate the URL
         $result = false;
-        if ($this->isRelativeUrl($value) || $this->isInCurrentDomain($request, $value) || $this->isInLocalDomain($value)) {
+        if ($this->isRelativeUrl($request, $value) || $this->isInCurrentDomain($request, $value) || $this->isInLocalDomain($value)) {
             $result = true;
         }
 
@@ -107,14 +107,14 @@ class RedirectUrlValidator implements LoggerAwareInterface
     /**
      * Determines whether the URL is relative to the current TYPO3 installation.
      */
-    protected function isRelativeUrl(string $url): bool
+    protected function isRelativeUrl(RequestInterface $request, string $url): bool
     {
         $url = GeneralUtility::sanitizeLocalUrl($url);
         if (!empty($url)) {
             $parsedUrl = @parse_url($url);
             if ($parsedUrl !== false && !isset($parsedUrl['scheme']) && !isset($parsedUrl['host'])) {
                 // If the relative URL starts with a slash, we need to check if it's within the current site path
-                return $parsedUrl['path'][0] !== '/' || str_starts_with($parsedUrl['path'], GeneralUtility::getIndpEnv('TYPO3_SITE_PATH'));
+                return $parsedUrl['path'][0] !== '/' || str_starts_with($parsedUrl['path'], $request->getAttribute('normalizedParams')->getSitePath());
             }
         }
         return false;
